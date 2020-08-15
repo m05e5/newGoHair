@@ -21,6 +21,13 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
     'soft hair',
     'ivan coiffure'
   ];
+  var newList = [
+    'Obama Fashon',
+    'Le claire',
+    'shine fashon',
+    'soft hair',
+    'ivan coiffure'
+  ];
   
   final _formKey = GlobalKey<FormState>();
   String _name;
@@ -31,6 +38,56 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
   String description;
   var toto;
   var selectedsalon;
+  var salonList = [];
+
+  Future<Null> getSalons() async{
+    CollectionReference ref = Firestore.instance.collection('coiffeurs');
+    QuerySnapshot snapshot = await ref.getDocuments();
+    snapshot.documents.forEach((element) {
+      setState(() {
+        salonList.add(element['salonName']);
+      });
+    });
+  }
+
+  FormField<String> dropDown(){
+    return FormField<String>(builder: (FormFieldState<String> state){
+      return InputDecorator(
+        decoration: InputDecoration(
+          errorStyle: TextStyle(color: Colors.redAccent),
+          hintText: 'Salon de coiffure',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(5.0)
+          )
+        ),
+        isEmpty: selectedsalon == null,
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            value: selectedsalon,
+            isDense: true,
+            items: salonList.map((e){
+              return DropdownMenuItem<String>(
+                value: e,
+                child: Text(e)
+              );
+            }).toList(),
+            onChanged: (String newValue){
+              setState(() {
+                selectedsalon = newValue;
+                state.didChange(newValue);
+              });
+            }
+          ),
+        ),
+      );
+    },);
+  }
+
+  @override
+  void initState() {
+    getSalons();
+    super.initState();
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -70,25 +127,7 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
 
     
                 SizedBox(height: 15.0),
-                   DropdownButton(
-                     items: _test.map((value) => DropdownMenuItem(
-                       
-                     child: Text(
-                       value,
-                       style: TextStyle(color: Colors.orange),
-                     ),
-                     value: value,
-                     )).toList(),
-                      onChanged: (selectedAccountType){
-                        print('$selectedAccountType');
-                        setState(() {
-                          toto = selectedAccountType;
-                        });
-                      },
-                     value: toto,
-                     isExpanded: true,
-                     hint: Text('choisisez un salon'),
-                      ),
+                   dropDown(),
 
  SizedBox(height: 15.0),
 

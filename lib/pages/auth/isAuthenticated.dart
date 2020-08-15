@@ -58,8 +58,8 @@ class GetCurrentUserDatas{
   GetCurrentUserDatas({this.id});
 
   //La reference de la collection de l'utilisateur finale
-  final CollectionReference userCollection = Firestore.instance.collection('users');
-
+  final CollectionReference userCollection = Firestore.instance.collection('user');
+  
   User userDataSnapshot (DocumentSnapshot snapshot) {
     return User(
         name: snapshot['name'],

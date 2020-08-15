@@ -93,7 +93,7 @@ class _RegisterFormState extends State<RegisterForm> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseUser _currentUser;
 
-  final CollectionReference userCollection = Firestore.instance.collection('users');
+  final CollectionReference userCollection = Firestore.instance.collection('user');
 
   String _getUserId(){
     if(this._currentUser != null){

@@ -43,9 +43,10 @@ class _FrontHomePageState extends State<FrontHomePage> {
     }
 
   Future<User> getCurrentUserInfo(String userId) async{
-    CollectionReference ref = Firestore.instance.collection('users');
+    CollectionReference ref = Firestore.instance.collection('user');
     QuerySnapshot snapshot = await ref.getDocuments();
     snapshot.documents.forEach((element) {
+      print(userId);
       if(element['id'] == userId){
         user = new User(
           id: element['id'],

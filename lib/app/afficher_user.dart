@@ -9,7 +9,7 @@ class Affichier extends StatefulWidget {
 }
 
 class _AffichierState extends State<Affichier> {
-final CollectionReference userCollection = Firestore.instance.collection('users');
+final CollectionReference userCollection = Firestore.instance.collection('user');
 
  
 
@@ -18,7 +18,7 @@ final CollectionReference userCollection = Firestore.instance.collection('users'
     return Container(
       height:620.0,
       child:StreamBuilder(
-        stream: Firestore.instance.collection('users').snapshots(),
+        stream: Firestore.instance.collection('user').snapshots(),
         builder: (context, snapshort){
           if(!snapshort.hasData){
             return Text("Lauding data... please wait ..");

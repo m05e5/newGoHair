@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_hair/constants/loading.dart';
 import 'package:go_hair/constants/custom_widgets.dart';
+import 'package:go_hair/models/role.dart';
 import 'package:go_hair/pages/auth/login.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -208,7 +209,7 @@ class _RegisterFormState extends State<RegisterForm> {
   FirebaseAuth _auth = FirebaseAuth.instance;
   FirebaseUser _currentUser;
 
-  final CollectionReference userCollection = Firestore.instance.collection('users');
+  final CollectionReference userCollection = Firestore.instance.collection('user');
 
   @override
   Widget build(BuildContext context) {
@@ -462,13 +463,15 @@ class _RegisterFormState extends State<RegisterForm> {
       });
 
       AuthResult result = await _auth.createUserWithEmailAndPassword(email: _email, password: _password);
-
-      await userCollection.document(this._getUserId()).setData({
-        'id': this._getUserId(),
-        'name': this._name,
-        'email': this._email,
-        'phone': this._phone,
-      });
+      if (result != null){
+        await userCollection.document(this._getUserId()).setData({
+          'id': result.user.uid,
+          'name': this._name,
+          'email': this._email,
+          'phone': this._phone,
+          'role': Role.roleClient
+        });
+      }
 
       if (result == null) {
         // Message d'erreur

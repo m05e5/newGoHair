@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_hair/constants/custom_widgets.dart';
 import 'package:go_hair/constants/loading.dart';
+import 'package:go_hair/models/role.dart';
 import 'package:go_hair/pages/auth/isAuthenticated_C.dart';
 import 'package:google_fonts/google_fonts.dart';
 class SignInCoiffeur extends StatefulWidget {
@@ -165,7 +166,9 @@ class _RegisterCoiffeurState extends State<RegisterCoiffeur> {
     FirebaseAuth _auth_C = FirebaseAuth.instance;
   FirebaseUser _currentCoiffeur;
 
-   final CollectionReference coiffeurCollection = Firestore.instance.collection('coiffeurs');
+   final CollectionReference shopCollection = Firestore.instance.collection('shop');
+   final CollectionReference userCollection = Firestore.instance.collection('user');
+
 
   @override
   Widget build(BuildContext context) {
@@ -449,16 +452,24 @@ class _RegisterCoiffeurState extends State<RegisterCoiffeur> {
 
       AuthResult result = await _auth_C.createUserWithEmailAndPassword(email: _email, password: _password);
 
-      await coiffeurCollection.document(this._getUserId()).setData({
-        'id': this._getUserId(),
-        'name': this._name,
-        'email': this._email,
-        'phone': this._phone,
-        'salonName': this._salonName,
-        'salonEmail': this._salonemail,
-        'salonNum': this._salonphone,
+      if(result != null){
+        await userCollection.document(this._getUserId()).setData({
+          'id': result.user.uid,
+          'name': this._name,
+          'email': this._email,
+          'phone': this._phone,
+          'role': Role.roleBarber
+        });
 
-      });
+        await shopCollection.document().setData({
+          'user_id':result.user.uid,
+          'name': this._salonName,
+          'phone': this._salonphone,
+          'email': this._salonemail
+        });
+      }
+
+
 
       if (result == null) {
         // Message d'erreur
