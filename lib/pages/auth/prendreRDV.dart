@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_hair/constants/custom_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_hair/models/appointment.dart';
+import 'package:go_hair/models/shop.dart';
 import 'package:go_hair/pages/auth/cathalogue.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
@@ -30,22 +33,28 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
   ];
   
   final _formKey = GlobalKey<FormState>();
-  String _name;
-  int _iduser;
-  int _idsalon;
-  int _idcoiffeur;
-  DateTime dat;
-  String description;
+  String clientName;
+  String clientPhone;
+  String userId;
+  String shopId;
+  String barberId;
+  String hairStyleId;
+  String date;
+  String detail;
   var toto;
   var selectedsalon;
   var salonList = [];
+  Map<String, String> mapList = {
+    
+  };
 
   Future<Null> getSalons() async{
-    CollectionReference ref = Firestore.instance.collection('coiffeurs');
+    CollectionReference ref = Firestore.instance.collection(Shop.table_name);
     QuerySnapshot snapshot = await ref.getDocuments();
     snapshot.documents.forEach((element) {
       setState(() {
-        salonList.add(element['salonName']);
+        salonList.add(element[Shop.label_name]);
+        mapList[element[Shop.label_id]] = element[Shop.label_name];
       });
     });
   }
@@ -65,14 +74,16 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
           child: DropdownButton<String>(
             value: selectedsalon,
             isDense: true,
-            items: salonList.map((e){
+            items: mapList.keys.map((key){
               return DropdownMenuItem<String>(
-                value: e,
-                child: Text(e)
+                value: key,
+                child: Text(mapList[key])
               );
             }).toList(),
             onChanged: (String newValue){
               setState(() {
+                print(newValue);
+                shopId = newValue;
                 selectedsalon = newValue;
                 state.didChange(newValue);
               });
@@ -96,12 +107,11 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
         title: Text("Nouveaux RDV", style: TextStyle(color: Colors.white),),
       ),
           body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 30),
             child: Form(
               key:_formKey,
               autovalidate: true, 
               child: ListView(
-                padding: EdgeInsets.symmetric(horizontal: 15.0),
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
                 children: <Widget>[
                    SizedBox(height: 15.0),
 
@@ -115,7 +125,7 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
         ),
         onChanged: (String value) {
           setState(() {
-            // _email = value;
+            clientName = value;
           });
          },
        ),
@@ -203,6 +213,7 @@ Column(children: <Widget>[
               initialTime:
                   TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
             );
+            this.date = "${date.day}/${date.month}/${date.year} ${time.hour}:${time.minute}";
             return DateTimeField.combine(date, time);
           } else {
             return currentValue;
@@ -222,9 +233,7 @@ SizedBox(height: 15.0),
               border: OutlineInputBorder(),
             ),
             onChanged: (String value) {
-              setState(() {
-                // _email = value;
-              });
+              clientPhone = value;
             },
           ),
 
@@ -241,9 +250,7 @@ SizedBox(height: 15.0),
               border: OutlineInputBorder(),
             ),
             onChanged: (String value) {
-              setState(() {
-                // _email = value;
-              });
+              detail = value;
             },
           ),
 
@@ -251,7 +258,9 @@ SizedBox(height: 15.0),
           SizedBox(height: 20.0),
 
           InkWell(
-        onTap: () {},
+        onTap: (){
+          saveAppointement();
+        },
         child: Container(
           width: MediaQuery.of(context).size.width,
           padding: EdgeInsets.symmetric(vertical: 15),
@@ -276,395 +285,27 @@ SizedBox(height: 15.0),
         )
 
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                      // StreamBuilder<QuerySnapshot>(
-                      //   stream: Firestore.instance.collection("coiffeurs").snapshots(),
-                      //   builder: (context, snapshot){
-                      //     if(!snapshot.hasData){
-                      //       Text("loading");
-                      //     }
-                      //     else{
-                      //       List<DropdownMenuItem> salon = [];
-                      //       for(int i=0; i>snapshot.data.documents.length ; i++){
-                      //        DocumentSnapshot snap = snapshot.data.documents[i]; 
-                      //         salon.add(
-                      //             DropdownMenuItem(
-                      //               child: Text(
-                      //                 snap.documentID,
-                      //                 style: TextStyle(color: Colors.orange),
-                      //               ),
-                      //               value: "${snap.documentID}",
-                      //               ),
-                      //         );
-                      //       }
-                      //       return Row(
-                      //         mainAxisAlignment: MainAxisAlignment.center,
-                      //         children: <Widget>[
-                      //        DropdownButton(
-                      //          items: salon, 
-                      //          onChanged: (lesalon){
-                      //           //  final snackBar = SnackBar(
-                      //           //    content: 
-                      //           //    Text('the selected saloon is $lesalon', style: TextStyle(color: Colors.orange)),
-                      //           //  );
-                      //           //  Scaffold.of(context).showSnackBar(snackBar);
-                      //            setState(() {
-                      //              selectedsalon = lesalon; 
-                      //            });
-                      //          },
-                      //          value: selectedsalon,
-                      //          isExpanded: true,
-                      //          hint: new Text("Choose your saloon"),
-                      //          )
-                      //       ],
-                      //       );
-                      //     }
-                      //   }
-                        
-                      //   ),
-            //            StreamBuilder<QuerySnapshot>(
-            //   stream: Firestore.instance.collection('coiffure').snapshots(),
-            //   builder: (context, snapshot){
-            //     if(!snapshot.hasData){
-            //      return Text('Loading...');
-            //     }
-            //     else{
-            //           List<DropdownMenuItem> salon = [];
-            //                 for(int i=0; i>snapshot.data.documents.length ; i++){
-            //                  DocumentSnapshot snap = snapshot.data.documents[i]; 
-            //                   salon.add(
-            //                       DropdownMenuItem(
-                                    
-            //                         child: Text(
-            //                           snap.documentID,
-                                      
-            //                           style: TextStyle(color: Colors.orange),
-            //                         ),
-            //                         value: "${snap.documentID}",
-            //                         ),
-            //                   );
-            //                   print(snap.documentID);
-                    
- 
-            //       }
-                  
-               
-            //         return Column(
-                       
-            //           children: <Widget>[ 
-            //              SizedBox(height: 30.0,),
-            //             DropdownButton(
-            //             items:salon,
-            //              onChanged: (coiffurevalue){
-            //                final snackbar = SnackBar(
-            //                  content: 
-            //                  Text('$coiffurevalue', style: TextStyle(color: Colors.orange),),
-            //                  );
-            //                  Scaffold.of(context).showSnackBar(snackbar);
-            //                  setState(() {
-            //                    selectedValue = coiffurevalue;   
-            //                  });
-            //              },
-            //              value: selectedValue,
-            //              isExpanded:true,
-            //              hint: new Text('choisisez un coiffeur',
-            //              style: TextStyle(color: Colors.orange)
-            //              ),
-            //       ),
-            //            SizedBox(height: 10.0,),
-            //        DropdownButton(
-            //             items:salon,
-            //              onChanged: (coiffurevalue){
-            //                final snackbar = SnackBar(
-            //                  content: 
-            //                  Text('$coiffurevalue', style: TextStyle(color: Colors.orange),),
-            //                  );
-            //                  Scaffold.of(context).showSnackBar(snackbar);
-            //                  setState(() {
-            //                    selectedValue = coiffurevalue;   
-            //                  });
-            //              },
-            //              value: selectedValue,
-            //              isExpanded:true,
-            //              hint: new Text('choisisez un salon',
-            //              style: TextStyle(color: Colors.orange)
-            //              ),
-            //       ),
-            //           ],
-            //         );
-
-                  
-         
-               
-            //     }
-            //   },
-            // ),
-                        
+                 
                 ],
               ),
             ),
           ),
     );
   }
+
+  saveAppointement() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    CollectionReference reference = Firestore.instance.collection(Appointment.table_name);
+    reference.document().setData({
+      Appointment.label_id : reference.document().documentID,
+      Appointment.label_shop_id : shopId,
+      Appointment.label_user_id : user.uid,
+      Appointment.label_client_name : clientName,
+      Appointment.label_client_phone : clientPhone,
+      Appointment.label_date_time : date,
+      Appointment.label_details : detail
+    });
+  }
 }
-
-
-
-
-
-
-
-
-              
-      //   key: _formKey,
-      //   child: Column(children: <Widget>[
-      //       Text('  ',
-      //       style: TextStyle(fontSize: 18.0),
-      //       ),
-           
-
-         
-
-      //       //dropdown
-      //       StreamBuilder<QuerySnapshot>(
-      //         stream: Firestore.instance.collection('coiffure').snapshots(),
-      //         builder: (context, snapshot){
-      //           if(!snapshot.hasData){
-      //             Text('Loading...');
-      //           }
-      //           else{
-      //             List<DropdownMenuItem> coiffeurItem=[];
-      //             for (int i=0; i>snapshot.data.documents.length; i++){
-      //               DocumentSnapshot snap = snapshot.data.documents[i];
-      //               coiffeurItem.add(
-      //                 DropdownMenuItem(
-      //                   child:Text(
-      //                     snap.documentID,
-      //                     style: TextStyle(color: Colors.orange)
-      //                   ) ,
-      //                   value: "${ snap.documentID}",
-      //                   ),
-      //               );
- 
-      //             }
-               
-      //               return Column(
-      //                 children: <Widget>[
-      //                    SizedBox(height: 30.0,),
-      //                   DropdownButton(
-      //                   items:coiffeurItem,
-      //                    onChanged: (coiffurevalue){
-      //                      final snackbar = SnackBar(
-      //                        content: 
-      //                        Text('$coiffurevalue', style: TextStyle(color: Colors.orange),),
-      //                        );
-      //                        Scaffold.of(context).showSnackBar(snackbar);
-      //                        setState(() {
-      //                          selectedValue = coiffurevalue;   
-      //                        });
-      //                    },
-      //                    value: selectedValue,
-      //                    isExpanded:true,
-      //                    hint: new Text('choisisez un coiffeur',
-      //                    style: TextStyle(color: Colors.orange)
-      //                    ),
-      //             ),
-
-      //                  SizedBox(height: 10.0,),
-      //              DropdownButton(
-      //                   items:coiffeurItem,
-      //                    onChanged: (coiffurevalue){
-      //                      final snackbar = SnackBar(
-      //                        content: 
-      //                        Text('$coiffurevalue', style: TextStyle(color: Colors.orange),),
-      //                        );
-      //                        Scaffold.of(context).showSnackBar(snackbar);
-      //                        setState(() {
-      //                          selectedValue = coiffurevalue;   
-      //                        });
-      //                    },
-      //                    value: selectedValue,
-      //                    isExpanded:true,
-      //                    hint: new Text('choisisez un salon',
-      //                    style: TextStyle(color: Colors.orange)
-      //                    ),
-      //             ),
-      //                 ],
-      //               );
-
-                  
-         
-               
-      //           }
-      //         },
-      //       ),
-      //        SizedBox(height: 10.0,),
-      //                   InkWell(
-      //                     onTap: () {
-      //   showDialog(context: context,
-        
-      //         builder: ( context){
-      //           return new AlertDialog(
-                  
-      //             title: new Text("faite votre choix"),
-      //             content: new Row(children: <Widget>[
-                    
-      //                 new InkWell(onTap: (){
-                      
-      //                 },
-                      
-      //                 child: Container(
-      //                    padding: EdgeInsets.all(5),
-      //                   decoration: BoxDecoration(
-      //                    borderRadius: BorderRadius.all(Radius.circular(5)),
-      //                    border: Border.all(color: Colors.white, width: 2),
-      //                    boxShadow: <BoxShadow>[
-      //         BoxShadow(
-      //             color: Color(0xffdf8e33).withAlpha(100),
-      //             offset: Offset(2, 4),
-      //             blurRadius: 8,
-      //             spreadRadius: 2)
-      //       ],
-      //                  ),
-      //                   child: new Text("Coiffeur",
-      //                    style: TextStyle(fontSize: 20, color: Color(0xfff7892b)),
-      //                   ),
-      //                 ),),
-      //                 new MaterialButton(onPressed: (){
-                        
-                  
-        
-      //                 },
-
-      //                 child: Container(
-      //                    padding: EdgeInsets.all(5),
-      //                    decoration: BoxDecoration(
-      //                    borderRadius: BorderRadius.all(Radius.circular(5)),
-      //                    border: Border.all(color: Colors.white, width: 2),
-      //                    boxShadow: <BoxShadow>[
-      //         BoxShadow(
-      //             color: Color(0xffdf8e33).withAlpha(100),
-      //             offset: Offset(2, 4),
-      //             blurRadius: 8,
-      //             spreadRadius: 2)
-      //       ],
-      //                  ),
-      //                   child: new Text("Client",
-      //                    style: TextStyle(fontSize: 20, color: Color(0xfff7892b)),
-      //                    ),
-      //                 ),)
-      //             ]),
-      //             actions: <Widget>[
-                    
-      //                 new InkWell(onTap: (){
-      //                   Navigator.of(context).pop(context); 
-      //                 },
-      //                 child: new Text("close",
-      //                  style: TextStyle(fontSize: 20, color: Colors.red),
-      //                 ),)
-                  
-      //               ],
-      //           );
-      //         }
-      //         );
-      //   // Navigator.push(
-      //   //     context, MaterialPageRoute(builder: (context) => RegisterPage()));
-        
-      // },
-      //                 child: TextFormField(
-      //       decoration:InputDecoration(
-      //         labelText: "coiffure",
-      //         border: OutlineInputBorder(),
-      //       ),
-      //       validator: (val) => val.isEmpty ? 'svp entrer le nom de votre cioffure' : null,
-      //       onChanged: (val) => setState(() => _name = val),
-      //       ),
-      //                   ),
-      //       SizedBox(height: 30.0,),
-
-      //       //slider
-      //       RaisedButton(
-      //         color: Colors.orange,
-      //         child: Text('Envoyer',
-      //         style: TextStyle(color: Colors.white),
-      //         ),
-      //         onPressed: () async{}
-      //       )
-      //   ],),
         
       

@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:go_hair/constants/custom_widgets.dart';
 import 'package:go_hair/constants/loading.dart';
 import 'package:go_hair/models/role.dart';
+import 'package:go_hair/models/user.dart';
 import 'package:go_hair/pages/auth/isAuthenticated_C.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:uuid/uuid.dart';
 class SignInCoiffeur extends StatefulWidget {
    SignInCoiffeur({Key key, this.title}) : super(key: key);
   final String title;
@@ -451,18 +453,23 @@ class _RegisterCoiffeurState extends State<RegisterCoiffeur> {
       });
 
       AuthResult result = await _auth_C.createUserWithEmailAndPassword(email: _email, password: _password);
-
+      var uuid = Uuid();
+      String shopId = uuid.v1();
       if(result != null){
         await userCollection.document(this._getUserId()).setData({
-          'id': result.user.uid,
-          'name': this._name,
-          'email': this._email,
-          'phone': this._phone,
-          'role': Role.roleBarber
+          User.label_id: result.user.uid,
+          User.label_name: this._name,
+          User.label_email: this._email,
+          User.label_phone: this._phone,
+          User.label_role: Role.roleBarber,
+          User.label_shop_id: shopId
         });
 
+        
+
         await shopCollection.document().setData({
-          'user_id':result.user.uid,
+          'id': shopId,
+          'user_id': result.user.uid,
           'name': this._salonName,
           'phone': this._salonphone,
           'email': this._salonemail
