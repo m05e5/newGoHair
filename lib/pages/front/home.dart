@@ -3,6 +3,7 @@ import 'dart:collection';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_hair/app/RDV/rdv.dart';
 import 'package:go_hair/app/afficher_RDV_C.dart';
 import 'package:go_hair/app/afficher_user.dart';
 import 'package:go_hair/app/welcome.dart';
@@ -11,6 +12,7 @@ import 'package:go_hair/pages/auth/isAuthenticated.dart';
 import 'package:go_hair/pages/auth/prendreRDV.dart';
 import 'package:go_hair/pages/auth/settings.dart';
 import 'package:go_hair/pages/users/clients.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 
@@ -112,16 +114,36 @@ class _FrontHomePageState extends State<FrontHomePage> {
       
       drawer:new Drawer(
        child: new ListView(
+         
          children: <Widget>[
 //          header
             new UserAccountsDrawerHeader(
+              
               accountName:new Text(this.name != null ? this.name : 'Loading...'),
               accountEmail:new Text(this.email != null ? this.email : 'Loading...'), 
               currentAccountPicture: GestureDetector(
-                child: new CircleAvatar(
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, color: Colors.white,),
-                  ) ,
+                
+                child: new RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+          text: 'Go',
+          style: GoogleFonts.portLligatSans(
+            textStyle: Theme.of(context).textTheme.display1,
+            fontSize: 25,
+            fontWeight: FontWeight.w700,
+            color: Color(0xffe46b10),
+          ),
+          children: [
+            TextSpan(
+              text: 'H',
+              style: TextStyle(color: Colors.black, fontSize: 25),
+            ),
+            TextSpan(
+              text: 'air',
+              style: TextStyle(color: Color(0xffe46b10), fontSize: 25),
+            ),
+          ]),
+    ),
                 ),
                 decoration: new BoxDecoration(
                   color:  Colors.orange
@@ -228,7 +250,7 @@ class _FrontHomePageState extends State<FrontHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new PrendreRDV())),
+        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new HomeScreen())),
       ),
     );
   }

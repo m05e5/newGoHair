@@ -7,6 +7,7 @@ import 'package:go_hair/constants/loading.dart';
 import 'package:go_hair/constants/custom_widgets.dart';
 import 'package:go_hair/models/role.dart';
 import 'package:go_hair/pages/auth/login.dart';
+import 'package:go_hair/pages/front/home.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -479,10 +480,13 @@ class _RegisterFormState extends State<RegisterForm> {
       }
 
       print('Successs');
+      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context){
+          return FrontHomePage();
+        })).then((value) => Navigator.pop(context));
       setState((){
         this.isLoading = false;
       });
-
+  
     }
   }
 

@@ -6,6 +6,7 @@ import 'package:go_hair/models/appointment.dart';
 import 'package:go_hair/models/shop.dart';
 import 'package:go_hair/pages/auth/cathalogue.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:go_hair/pages/front/home.dart';
 import 'package:intl/intl.dart';
 
 class PrendreRDV extends StatefulWidget {
@@ -303,8 +304,10 @@ SizedBox(height: 15.0),
       Appointment.label_client_name : clientName,
       Appointment.label_client_phone : clientPhone,
       Appointment.label_date_time : date,
-      Appointment.label_details : detail
+      Appointment.label_details : detail,
+      
     });
+     Navigator.push(context, MaterialPageRoute(builder: (context)=>new FrontHomePage()));
   }
 }
         
