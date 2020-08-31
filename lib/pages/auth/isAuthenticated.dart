@@ -26,12 +26,15 @@ class StreamProviderAuth{
 
   //Creation d'un objet utilisateur provenant de firebase
   Authentificated authentificatedFromFirebase(FirebaseUser user){
+     print('auth33333333333333333333333333333333333');
     return user != null ? Authentificated(id: user.uid) : null;
   }
 
   //Diffusion de l'authentification de l'utilisateur
   Stream<Authentificated> get users {
+     print('auth11111111111111111111111111111111111');
     return _auth.onAuthStateChanged.map(authentificatedFromFirebase);
+   
   }
 
 }
@@ -71,8 +74,9 @@ class GetCurrentUserDatas{
   
 
   //Obtenir les données utilisateurs en stream
-Stream<User> get userData {
-    return userCollection.document(id).snapshots()
-        .map(userDataSnapshot);
-}
+// Stream<User> get userData {
+//    print('auth2222222222222222222222222222222222222222');
+//     return userCollection.document(id).snapshots()
+//         .map(userDataSnapshot);
+// }
 }

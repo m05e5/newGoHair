@@ -1,126 +1,191 @@
+import 'package:flutter/cupertino.dart';
+import 'package:cupertino_stepper/cupertino_stepper.dart';
 import 'package:flutter/material.dart';
-import 'package:go_hair/app/RDV/dateRDV.dart';
-import 'package:go_hair/app/RDV/heurRDV.dart';
-import 'package:go_hair/app/RDV/selected.dart';
-import 'package:provider/provider.dart';
+import 'package:go_hair/pages/auth/prendreRDV.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 
+void main() => runApp(StepperApp());
 
-class HomeScreen extends StatefulWidget {
+class StepperApp extends StatelessWidget {
+  
+ 
+  
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  Widget build(BuildContext context) {
+    return CupertinoApp(
+      title: 'CupertinoStepper for Flutter',
+      debugShowCheckedModeBanner: false,
+      home: StepperPage(),
+    );
+  }
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _currentStep = 0;
+class StepperPage extends StatefulWidget {
   
   @override
-  void initState() {
-    super.initState();
+  _StepperPageState createState() => _StepperPageState();
+}
+
+class _StepperPageState extends State<StepperPage> {
+  final format = DateFormat("yyyy-MM-dd");
+  int currentStep = 0;
+   final _formKey = GlobalKey<FormState>();
+  String clientName;
+  String clientPhone;
+  String userId;
+  String shopId;
+  String barberId;
+  String hairStyleId;
+  String date;
+  String detail;
   
-  // loading votes
-  Future.microtask(() {
-    Provider.of<VoteState>(context, ).clearState();
-    Provider.of<VoteState>(context, ).loadVoteList();
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text('CupertinoStepper for Flutter'),
+      ),
+      child: SafeArea(
+        child: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+            switch (orientation) {
+              case Orientation.portrait:
+                return _buildStepper(StepperType.vertical);
+              case Orientation.landscape:
+                return _buildStepper(StepperType.horizontal);
+              default:
+                throw UnimplementedError(orientation.toString());
+            }
+          },
+        ),
+      ),
+    );
   }
-    
-      );
-      }
-    
-    
-      @override
-      Widget build(BuildContext context) {
-        return Container(
-          child: Material(
-            child: Column(
-              children: <Widget>[
-                 Expanded(
-                              child: Stepper(
-                     type: StepperType.horizontal ,
-                     currentStep: _currentStep,
-                     steps: [
-                       getStep(
-                         title: 'Choose',
-                         child: Text('bob'),
-                         isActive: true, 
-                       ),
-                        getStep(
-                         title: 'Vote',
-                         child:  Text('hello'),
-                         isActive: _currentStep >= 1 ? true: false, 
-                       ),
-                        getStep(
-                         title: 'Vote',
-                         child: Text('last step'),
-                         isActive: _currentStep >= 2 ? true: false, 
-                       ),
-                     ],
-                     
-                     onStepContinue: (){
-                       if(_currentStep == 0){
-                         if(step2Required()){
-                            setState(() {
-                         _currentStep = (_currentStep + 1) > 2 ? 2 : _currentStep + 1;
-                       });
-                        }else{
-                          showSnackBar(context, 'please select a vote first');
-                        }
-                       } else if(_currentStep == 1){
-                         if (step3Required()){
-                           Navigator.pop(context);
-                         }else{
-                           showSnackBar(context, 'please mark your vote!');
-                         }
-                       }
 
-                      
-                     },
-                     onStepCancel: (){
-                       if(_currentStep <= 0){
-                         Provider.of<VoteState>(context, listen: false).activeVote = null;
-                       }
+  CupertinoStepper _buildStepper(StepperType type) {
+    final canCancel = currentStep > 0;
+    final canContinue = currentStep < 3;
+    var i = 1;
+        return CupertinoStepper(
+          type: type,
+          currentStep: currentStep,
+          onStepTapped: (step) => setState(() => currentStep = step),
+          onStepCancel: canCancel ? () => setState(() => --currentStep) : null,
+          onStepContinue: canContinue ? () => setState(() => ++currentStep) : null,
+          steps: [
+         
+              _buildStep(
+                title: Text('Step $i'),
+                isActive: i == currentStep,
+            state: i == currentStep
+                ? StepState.editing
+                : i < currentStep ? StepState.complete : StepState.indexed,
+                content:  LimitedBox(
+        maxWidth: 300,
+        maxHeight: 300,
+        child: Material(
+          color: Colors.white,
+          child: Column(children: <Widget>[
+            TextFormField(
+               keyboardType: TextInputType.text,
+        decoration: InputDecoration(
+          labelText: "Nom",
+          border: OutlineInputBorder(),
+        ),
+        onChanged: (String value) {
+          setState(() {
+             clientName = value;
+          });
+         },
+            ),
+SizedBox(height: 15.0),
 
-                       setState(() {
-                         _currentStep = (_currentStep - 1) < 0 ? 0 : _currentStep - 1;
-                       });
-                     },
-                     ),
-                 ),
-              ],
-            )
-            
+             TextFormField(
+
+            // controller: _emailController,
+            // validator: _validateEmail,
+            keyboardType: TextInputType.phone,
+            decoration: InputDecoration(
+              labelText: "Contact",
+              border: OutlineInputBorder(),
+            ),
+            onChanged: (String value) {
+              clientPhone = value;
+            },
           ),
-        );
-      }
+
+SizedBox(height: 15.0),
+
+          Column(children: <Widget>[
+          Text('Basic date field (${format.pattern})'),
+            DateTimeField(
+             decoration: InputDecoration(
+           labelText: "Date du rendezvous",
+           border: OutlineInputBorder(),
+            ),
+           format: format,
+           onShowPicker: (context, currentValue) {
+             return showDatePicker(
+              context: context,
+              firstDate: DateTime(1900),
+              initialDate: currentValue ?? DateTime.now(),
+              lastDate: DateTime(2100));
+        },
+      ),
+    ]),
 
 
-      bool step2Required(){
-        if(Provider.of<VoteState>(context, listen: false).activeVote == null){
-          return false;
-        }
-        return true;
-      }
-     bool step3Required(){
-        if(Provider.of<VoteState>(context, listen: false).selectedOptionInActiveVote == null){
-          return false;
-        }
-        return true;
-      }
-
-      void showSnackBar(BuildContext context, String msg){
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              msg,
-              style: TextStyle(fontSize: 22),
-            ), 
+          ],),
           ),
-        );
-      }
-      Step getStep({String title, Widget child, bool isActive = false}){
-          return Step(
-            title: Text(title),
-            content: child,
-            isActive: isActive,
-          );
-      }
-    } 
+      ),
+          ),
+        _buildStep(
+          title: Text('Error'),
+          state: StepState.editing,
+          content:  LimitedBox(
+        maxWidth: 300,
+        maxHeight: 300,
+        child: Container(
+          color: CupertinoColors.systemGrey,
+          child:Text('bollow') ,
+        
+        ),
+      ),
+          
+        ),
+        _buildStep(
+          title: Text('Disabled'),
+          state: StepState.disabled,
+          content:  LimitedBox(
+        maxWidth: 300,
+        maxHeight: 300,
+        child: Container(
+          color: CupertinoColors.systemGrey,
+          child:Text('hello') ,
+        
+        ),
+      ),
+       
+        )
+      ],
+    );
+  }
+
+  Step _buildStep({
+    @required Widget title,
+    @required Widget content,
+    StepState state = StepState.indexed,
+    bool isActive = false,
+  }) {
+    return Step(
+      title: title,
+      subtitle: Text('Subtitle'),
+      state: state,
+      isActive: isActive,
+      content:content
+    );
+  }
+}

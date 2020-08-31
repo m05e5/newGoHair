@@ -11,6 +11,8 @@ import 'package:go_hair/constants/loading.dart';
 import 'package:go_hair/pages/auth/isAuthenticated.dart';
 import 'package:go_hair/pages/auth/prendreRDV.dart';
 import 'package:go_hair/pages/auth/settings.dart';
+import 'package:go_hair/pages/front/cardAdv.dart';
+import 'package:go_hair/pages/front/horizontalList.dart';
 import 'package:go_hair/pages/users/clients.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -85,13 +87,6 @@ class _FrontHomePageState extends State<FrontHomePage> {
     final user = Provider.of<Authentificated>(context);
     final height = MediaQuery.of(context).size.height; 
 
-    GetCurrentUserDatas(id: user.id).userData.forEach((snapshot) {
-      setState(() {
-        this.name = snapshot.name;
-        this.phone = snapshot.phone;
-        this.email = snapshot.email;
-      });
-    });
     
     return Scaffold(
       appBar: AppBar(
@@ -224,10 +219,11 @@ class _FrontHomePageState extends State<FrontHomePage> {
          ],
        ),
      ) ,
-      body: Center(
-        child: Column(
+      body: ListView(
+        children:<Widget>[ Column(
           children: [
             SizedBox(height: 24),
+            HorizontalList(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Center(
@@ -240,17 +236,20 @@ class _FrontHomePageState extends State<FrontHomePage> {
                 ),
               ),
             ),
-            Container(
-              
-              child:Afficher_RDV_C(),
-            )
+            
+            
+             Container(
+               height: height/2,
+              child:Cart_products(),
+            //   child:Afficher_RDV_C(),
+             )
             
           ],
-        ),
+        ),]
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new HomeScreen())),
+        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new StepperApp())),
       ),
     );
   }

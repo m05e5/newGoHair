@@ -19,6 +19,7 @@ class _Afficher_RDV_CState extends State<Afficher_RDV_C> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    final width = MediaQuery.of(context).size.width;
     return Container(
       height:height/1.22,
       child:StreamBuilder(
@@ -90,7 +91,7 @@ class _Afficher_RDV_CState extends State<Afficher_RDV_C> {
                           ),
     SizedBox(width: 20),
     Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(0.0),
       child: InkWell(  
    onTap: (){},
          child: Container(
