@@ -14,7 +14,7 @@ class Authentificated{
 class User{
   String id;
   String name;
-  int phone;
+  String phone;
   String email;
 
   User({this.id, this.name, this.phone, this.email});

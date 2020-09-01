@@ -395,7 +395,9 @@ class _LoginFormState extends State<LoginForm> {
         this.isLoading = true;
       });
       AuthResult result = await _auth.signInWithEmailAndPassword(email: _email, password: _password);
-
+      FirebaseUser user = result.user;
+      print("=======================================");
+      print(user);
       if (result == null) {
         // Message d'erreur
         print("Une erreur s'est produite lors de connexion");

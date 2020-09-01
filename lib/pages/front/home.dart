@@ -29,7 +29,7 @@ class FrontHomePage extends StatefulWidget {
 class _FrontHomePageState extends State<FrontHomePage> {
 
   String name;
-  int phone;
+  String phone;
   String email;
   User user;
 
@@ -61,6 +61,7 @@ class _FrontHomePageState extends State<FrontHomePage> {
         setState(() {
           this.name = user.name;
           this.email = user.email;
+          this.phone = user.phone;
         });
       }
     });
@@ -242,7 +243,8 @@ class _FrontHomePageState extends State<FrontHomePage> {
                height: height/2,
               child:Cart_products(),
             //   child:Afficher_RDV_C(),
-             )
+             ),
+        
             
           ],
         ),]

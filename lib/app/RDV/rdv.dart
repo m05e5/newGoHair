@@ -3,7 +3,8 @@ import 'package:cupertino_stepper/cupertino_stepper.dart';
 import 'package:flutter/material.dart';
 import 'package:go_hair/pages/auth/prendreRDV.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart'; 
+import 'package:flutter_date_pickers/flutter_date_pickers.dart';
 
 void main() => runApp(StepperApp());
 
@@ -46,16 +47,16 @@ class _StepperPageState extends State<StepperPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: Text('CupertinoStepper for Flutter'),
+        middle: Text('Reservation'),
       ),
       child: SafeArea(
         child: OrientationBuilder(
           builder: (BuildContext context, Orientation orientation) {
             switch (orientation) {
               case Orientation.portrait:
-                return _buildStepper(StepperType.vertical);
-              case Orientation.landscape:
                 return _buildStepper(StepperType.horizontal);
+              case Orientation.landscape:
+                return _buildStepper(StepperType.vertical );
               default:
                 throw UnimplementedError(orientation.toString());
             }
@@ -68,7 +69,7 @@ class _StepperPageState extends State<StepperPage> {
   CupertinoStepper _buildStepper(StepperType type) {
     final canCancel = currentStep > 0;
     final canContinue = currentStep < 3;
-    var i = 1;
+    var i = 0;
         return CupertinoStepper(
           type: type,
           currentStep: currentStep,
@@ -78,8 +79,8 @@ class _StepperPageState extends State<StepperPage> {
           steps: [
          
               _buildStep(
-                title: Text('Step $i'),
-                isActive: i == currentStep,
+                title: Text('Step ${i + 1}'),
+                // isActive: i == currentStep,
             state: i == currentStep
                 ? StepState.editing
                 : i < currentStep ? StepState.complete : StepState.indexed,
@@ -88,7 +89,7 @@ class _StepperPageState extends State<StepperPage> {
         maxHeight: 300,
         child: Material(
           color: Colors.white,
-          child: Column(children: <Widget>[
+          child: ListView(children: <Widget>[
             TextFormField(
                keyboardType: TextInputType.text,
         decoration: InputDecoration(
@@ -144,13 +145,20 @@ SizedBox(height: 15.0),
           ),
         _buildStep(
           title: Text('Error'),
-          state: StepState.editing,
+          // isActive: i == currentStep + 1 ,
+            state: i == currentStep
+                ? StepState.indexed
+                : i < currentStep ? StepState.editing : StepState.complete,
           content:  LimitedBox(
         maxWidth: 300,
         maxHeight: 300,
         child: Container(
           color: CupertinoColors.systemGrey,
-          child:Text('bollow') ,
+          child:Container(
+            child:Column(children: <Widget>[
+               
+            ],) ,
+            ) ,
         
         ),
       ),
@@ -158,7 +166,7 @@ SizedBox(height: 15.0),
         ),
         _buildStep(
           title: Text('Disabled'),
-          state: StepState.disabled,
+          state: StepState.indexed,
           content:  LimitedBox(
         maxWidth: 300,
         maxHeight: 300,
