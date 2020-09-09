@@ -64,7 +64,7 @@ User user;
       appBar: AppBar(
         title: Text("Edit profile"),
       ) ,
-      body:Padding(
+      body:user == null ? SizedBox() : Padding(
         padding: const EdgeInsets.all(8.0),
         child: ListView(children: <Widget>[
           SizedBox(height: 15.0),

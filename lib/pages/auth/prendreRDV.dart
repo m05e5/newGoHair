@@ -41,6 +41,7 @@ final format = DateFormat("yyyy-MM-dd HH:mm");
   String barberId;
   String hairStyleId;
   String date;
+  String time;
   String detail;
   var toto;
   var selectedsalon;
@@ -303,7 +304,8 @@ SizedBox(height: 15.0),
       Appointment.label_user_id : user.uid,
       Appointment.label_client_name : clientName,
       Appointment.label_client_phone : clientPhone,
-      Appointment.label_date_time : date,
+      Appointment.label_date : date,
+      Appointment.label_time: time,
       Appointment.label_details : detail,
       
     });

@@ -26,12 +26,38 @@ class _Cart_productsState extends State<Cart_products> {
       "price": 130,
 
     },
-    { "name": "sunshine",
-      "picture":  "assets/catalogue/card6.jpg",
-      "price": 90,
-  
-    }
-     
+    {
+       "name": "Fashon police",
+      "picture":  "assets/catalogue/card1.jpg",
+       "price": 70,
+
+    },
+    {
+       "name": "Fashon police",
+      "picture":  "assets/catalogue/card1.jpg",
+       "price": 70,
+
+    },
+    
+    {
+       "name": "Fashon police",
+      "picture":  "assets/catalogue/card1.jpg",
+       "price": 70,
+
+    },
+    {
+       "name": "Fashon police",
+      "picture":  "assets/catalogue/card1.jpg",
+       "price": 70,
+
+    },
+    {
+       "name": "Fashon police",
+      "picture":  "assets/catalogue/card1.jpg",
+       "price": 70,
+
+    },
+    
   ];
 
   @override

@@ -1,10 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cupertino_stepper/cupertino_stepper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar_carousel/classes/event.dart';
+import 'package:go_hair/models/appointment.dart';
 import 'package:go_hair/pages/auth/prendreRDV.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:go_hair/pages/front/home.dart';
 import 'package:intl/intl.dart'; 
 import 'package:flutter_date_pickers/flutter_date_pickers.dart';
+import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart' show CalendarCarousel;
 
 void main() => runApp(StepperApp());
 
@@ -14,11 +20,7 @@ class StepperApp extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return CupertinoApp(
-      title: 'CupertinoStepper for Flutter',
-      debugShowCheckedModeBanner: false,
-      home: StepperPage(),
-    );
+    return StepperPage();
   }
 }
 
@@ -39,145 +41,60 @@ class _StepperPageState extends State<StepperPage> {
   String barberId;
   String hairStyleId;
   String date;
+  String time;
   String detail;
+  DateTime _currentDate;
+  DateTime today;
+  var _markedDateMap;
+
   
-  
+  @override
+  void initState() {
+    String month = DateTime.now().month.toString();
+    String day = DateTime.now().day.toString();
+    if(month.length == 1)month = '0$month';
+    if(day.length == 1)day = '0$day';
+    today = DateTime.parse("${DateTime.now().year}-$month-$day");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        middle: Text('Reservation'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Reservation'),
       ),
-      child: SafeArea(
-        child: OrientationBuilder(
-          builder: (BuildContext context, Orientation orientation) {
-            switch (orientation) {
-              case Orientation.portrait:
-                return _buildStepper(StepperType.horizontal);
-              case Orientation.landscape:
-                return _buildStepper(StepperType.vertical );
-              default:
-                throw UnimplementedError(orientation.toString());
-            }
-          },
-        ),
+      body: SafeArea(
+        child: _buildStepper(StepperType.vertical)
       ),
     );
   }
 
-  CupertinoStepper _buildStepper(StepperType type) {
+  _buildStepper(StepperType type) {
     final canCancel = currentStep > 0;
     final canContinue = currentStep < 3;
     var i = 0;
-        return CupertinoStepper(
+        return Stepper(
           type: type,
           currentStep: currentStep,
           onStepTapped: (step) => setState(() => currentStep = step),
           onStepCancel: canCancel ? () => setState(() => --currentStep) : null,
-          onStepContinue: canContinue ? () => setState(() => ++currentStep) : null,
+          onStepContinue: canContinue ? (){
+              setState(() => ++currentStep);
+          }  : null,
           steps: [
-         
-              _buildStep(
-                title: Text('Step ${i + 1}'),
-                // isActive: i == currentStep,
-            state: i == currentStep
-                ? StepState.editing
-                : i < currentStep ? StepState.complete : StepState.indexed,
-                content:  LimitedBox(
-        maxWidth: 300,
-        maxHeight: 300,
-        child: Material(
-          color: Colors.white,
-          child: ListView(children: <Widget>[
-            TextFormField(
-               keyboardType: TextInputType.text,
-        decoration: InputDecoration(
-          labelText: "Nom",
-          border: OutlineInputBorder(),
-        ),
-        onChanged: (String value) {
-          setState(() {
-             clientName = value;
-          });
-         },
+            _buildStep(
+              title: Text('Step ${i + 1}'),
+              content: step1()
             ),
-SizedBox(height: 15.0),
-
-             TextFormField(
-
-            // controller: _emailController,
-            // validator: _validateEmail,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              labelText: "Contact",
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (String value) {
-              clientPhone = value;
-            },
+          _buildStep(
+            title: Text('Date'),
+            content:  dateDuRDV()
           ),
-
-SizedBox(height: 15.0),
-
-          Column(children: <Widget>[
-          Text('Basic date field (${format.pattern})'),
-            DateTimeField(
-             decoration: InputDecoration(
-           labelText: "Date du rendezvous",
-           border: OutlineInputBorder(),
-            ),
-           format: format,
-           onShowPicker: (context, currentValue) {
-             return showDatePicker(
-              context: context,
-              firstDate: DateTime(1900),
-              initialDate: currentValue ?? DateTime.now(),
-              lastDate: DateTime(2100));
-        },
-      ),
-    ]),
-
-
-          ],),
-          ),
-      ),
-          ),
-        _buildStep(
-          title: Text('Error'),
-          // isActive: i == currentStep + 1 ,
-            state: i == currentStep
-                ? StepState.indexed
-                : i < currentStep ? StepState.editing : StepState.complete,
-          content:  LimitedBox(
-        maxWidth: 300,
-        maxHeight: 300,
-        child: Container(
-          color: CupertinoColors.systemGrey,
-          child:Container(
-            child:Column(children: <Widget>[
-               
-            ],) ,
-            ) ,
-        
-        ),
-      ),
-          
-        ),
-        _buildStep(
-          title: Text('Disabled'),
-          state: StepState.indexed,
-          content:  LimitedBox(
-        maxWidth: 300,
-        maxHeight: 300,
-        child: Container(
-          color: CupertinoColors.systemGrey,
-          child:Text('hello') ,
-        
-        ),
-      ),
-       
-        )
+          _buildStep(
+            title: Text('Disabled'),
+            content:  Text('hello')
+          )
       ],
     );
   }
@@ -190,10 +107,142 @@ SizedBox(height: 15.0),
   }) {
     return Step(
       title: title,
-      subtitle: Text('Subtitle'),
       state: state,
       isActive: isActive,
       content:content
     );
   }
+
+  step1(){
+    return Column(children: <Widget>[
+      TextFormField(
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: "Nom",
+                    border: OutlineInputBorder(),
+                 ),
+                  onChanged: (String value) {
+                  setState(() {
+                      clientName = value;
+                   });
+                  },
+              ),
+SizedBox(height: 15.0),
+             TextFormField(
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: "Prenom",
+                    border: OutlineInputBorder(),
+                 ),
+                  onChanged: (String value) {
+                  setState(() {
+                      clientName = value;
+                   });
+                  },
+              ),
+SizedBox(height: 15.0),
+
+               TextFormField(
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                labelText: "Contact",
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (String value) {
+                clientPhone = value;
+              },
+            ),
+    ],);
+  }
+   saveAppointement() async{
+    FirebaseUser user = await FirebaseAuth.instance.currentUser();
+    CollectionReference reference = Firestore.instance.collection(Appointment.table_name);
+    reference.document().setData({
+      Appointment.label_id : reference.document().documentID,
+      Appointment.label_shop_id : shopId,
+      Appointment.label_user_id : user.uid,
+      Appointment.label_client_name : clientName,
+      Appointment.label_client_phone : clientPhone,
+      Appointment.label_date: date,
+      Appointment.label_time: time,
+      Appointment.label_details : detail,
+      
+    });
+     Navigator.push(context, MaterialPageRoute(builder: (context)=>new FrontHomePage()));
+  }
+
+  showMyDialog() async{
+    await showDialog(context: context, builder: (buildContext){
+      return SimpleDialog(children: <Widget>[Text('BOOM')],);
+    });
+  }
+
+  Widget dateDuRDV() {
+ 
+    return Column(
+      children: <Widget>[
+        Container(
+      margin: EdgeInsets.symmetric(horizontal: 16.0),
+      child: CalendarCarousel<Event>(
+        height: 300,
+        onDayPressed: (DateTime date, List<Event> events) {
+          this.setState(() => _currentDate = date);
+          print(date);
+        },
+        minSelectedDate: today,
+        weekendTextStyle: TextStyle(
+          color: Colors.red,
+        ),
+        thisMonthDayBorderColor: Colors.white,
+        customDayBuilder: (
+          bool isSelectable,
+          int index,
+          bool isSelectedDay,
+          bool isToday,
+          bool isPrevMonthDay,
+          TextStyle textStyle,
+          bool isNextMonthDay,
+          bool isThisMonthDay,
+          DateTime day,
+        ) {
+            
+        },
+        weekFormat: false,
+        markedDatesMap: _markedDateMap,
+        selectedDayButtonColor: Colors.orange,
+        selectedDayBorderColor: Colors.orange,
+      selectedDateTime: _currentDate,
+      daysHaveCircularBorder: true,
+    ),
+  ),
+  Wrap(children: <Widget>[
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+  ],)
+      ],
+    );
+}
+
+timeItem(){
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 4, vertical:2),
+    height: 40,
+    width: 100,
+    child: FlatButton(
+      color: Colors.orange,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(5)
+      ),
+      onPressed: (){
+
+      },
+      child: Text('10:00')
+    ),
+  );
+}
 }

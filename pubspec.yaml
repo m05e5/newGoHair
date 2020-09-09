@@ -37,6 +37,7 @@ dependencies:
   uuid: ^2.2.0
   cupertino_stepper: ^0.1.1
   flutter_date_pickers: ^0.1.7
+  flutter_calendar_carousel: ^1.4.12
   
 
   # The following adds the Cupertino Icons font to your application.

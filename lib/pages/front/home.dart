@@ -177,7 +177,7 @@ class _FrontHomePageState extends State<FrontHomePage> {
            
 
                InkWell(
-                onTap: (){},
+                onTap: () =>Navigator.push(context, MaterialPageRoute(builder: (context)=>new StepperApp())),
                               child: ListTile(
                   title: Text('Fidelité'),
                   leading: Icon(Icons.favorite, 
@@ -220,39 +220,24 @@ class _FrontHomePageState extends State<FrontHomePage> {
          ],
        ),
      ) ,
-      body: ListView(
-        children:<Widget>[ Column(
-          children: [
-            SizedBox(height: 24),
-            HorizontalList(),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    (this.isLoading == true) ? SimpleLoading()
-                        : Text('Liste de mes Rendezvous'),
-                  ],
-                ),
-              ),
+      body: Column(children: <Widget>[
+        SizedBox(height: 24),
+        HorizontalList(),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                (this.isLoading == true) ? SimpleLoading()
+                    : Text('  '),
+              ],
             ),
-            
-            
-             Container(
-               height: height/2,
-              child:Cart_products(),
-            //   child:Afficher_RDV_C(),
-             ),
-        
-            
-          ],
-        ),]
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new StepperApp())),
-      ),
+          ),
+        ),
+        Expanded(child: Cart_products(),)
+      ],),
+      
     );
   }
 
