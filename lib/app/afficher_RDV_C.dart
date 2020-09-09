@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_hair/models/appointment.dart';
 
-// ignore: camel_case_types
+//ignore: camel_case_types
 class Afficher_RDV_C extends StatefulWidget {
   @override
   _Afficher_RDV_CState createState() => _Afficher_RDV_CState();
@@ -36,9 +36,9 @@ class _Afficher_RDV_CState extends State<Afficher_RDV_C> {
                 return Padding(
                   padding: const EdgeInsets.all(4.0),
                   child: Card(
-                    elevation:4,
+                    elevation:5.0,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

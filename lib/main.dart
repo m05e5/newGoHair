@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:go_hair/models/appointment.dart';
+import 'package:go_hair/models/category.dart';
+import 'package:go_hair/models/fidelity.dart';
+import 'package:go_hair/models/hair_style.dart';
+import 'package:go_hair/models/shop.dart';
 import 'package:go_hair/pages/auth/isAuthenticated.dart';
-import 'package:go_hair/pages/auth/login.dart';
-import 'package:go_hair/pages/auth/register.dart';
-import 'package:go_hair/pages/auth/register_coiffeur.dart';
-import 'package:go_hair/pages/auth/settings.dart';
-import 'package:go_hair/pages/front/home.dart';
-import 'package:go_hair/pages/users/clients.dart';
+import 'package:object_mapper/object_mapper.dart';
 import 'package:provider/provider.dart';
-
-import 'app/welcome.dart';
-
-void main() => runApp(MyApp());
+void main(){
+  Mappable.factories = {
+    Appointment : () => Appointment(),
+    Category : () => Category(),
+    Fidelity : () => Fidelity(),
+    HairStyle : () => HairStyle(),
+    Shop : () => Shop(),
+    User : () => User(),
+  };
+  runApp(MyApp());
+}
 
 
 

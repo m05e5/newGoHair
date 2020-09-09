@@ -1,21 +1,24 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_hair/app/RDV/rdv.dart';
-import 'package:go_hair/app/afficher_RDV_C.dart';
-import 'package:go_hair/app/afficher_user.dart';
 import 'package:go_hair/app/welcome.dart';
 import 'package:go_hair/constants/loading.dart';
+import 'package:go_hair/models/category.dart';
+import 'package:go_hair/models/shop.dart';
 import 'package:go_hair/pages/auth/isAuthenticated.dart';
-import 'package:go_hair/pages/auth/prendreRDV.dart';
 import 'package:go_hair/pages/auth/settings.dart';
 import 'package:go_hair/pages/front/cardAdv.dart';
-import 'package:go_hair/pages/front/horizontalList.dart';
 import 'package:go_hair/pages/users/clients.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:object_mapper/object_mapper.dart';
 import 'package:provider/provider.dart';
+import 'package:smooth_star_rating/smooth_star_rating.dart';
+
+import 'horizontalList.dart';
 
 
 class FrontHomePage extends StatefulWidget {
@@ -32,6 +35,8 @@ class _FrontHomePageState extends State<FrontHomePage> {
   String phone;
   String email;
   User user;
+  List<Category> categories = [];
+  List<Shop> shops = [];
 
   bool isLoading = false; 
 
@@ -68,9 +73,34 @@ class _FrontHomePageState extends State<FrontHomePage> {
     return user;
   }
 
+  Future<List<Category>> getCategories() async{
+    CollectionReference ref = Firestore.instance.collection(Category.tableName);
+    QuerySnapshot snapshot = await ref.getDocuments();
+    snapshot.documents.forEach((element) {
+      setState(() {
+        categories.add(Mapper.fromJson(element.data).toObject<Category>());
+      });
+    });
+    return categories;
+  }
+
+  Future<List<Shop>> getShops() async{
+    CollectionReference ref = Firestore.instance.collection(Shop.table_name);
+    QuerySnapshot snapshot = await ref.getDocuments();
+    snapshot.documents.forEach((element) {
+      setState(() {
+        shops.add(Mapper.fromJson(element.data).toObject<Shop>());
+      });
+    });
+    print("===========================================${shops.toString()}");
+    return shops;
+  }
+
     @override
   void initState() {
     setUserInfo();
+    getCategories();
+    getShops();
     super.initState();
   }
 
@@ -220,24 +250,97 @@ class _FrontHomePageState extends State<FrontHomePage> {
          ],
        ),
      ) ,
-      body: Column(children: <Widget>[
-        SizedBox(height: 24),
-        HorizontalList(),
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                (this.isLoading == true) ? SimpleLoading()
-                    : Text('  '),
-              ],
+      body: Column(
+        children: [
+          HorizontalList(categories),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  (this.isLoading == true) ? SimpleLoading()
+                      : SizedBox(),
+                ],
+              ),
             ),
           ),
-        ),
-        Expanded(child: Cart_products(),)
-      ],),
-      
+          Expanded(
+            child: ListView.builder(
+              itemCount: shops.length,
+              itemBuilder: (context, i){
+                Shop shop = shops[i];
+                return Column(
+                  children: <Widget>[
+                    Card(
+                      elevation: 4,
+                      child: FlatButton(
+                        padding: EdgeInsets.all(0),
+                        onPressed: (){},
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          width: double.infinity,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10)
+                          ),
+                          child: Row(
+                            children: <Widget>[
+                              Container(
+                                height: double.infinity,
+                                width: 120,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(shop.imageUrl)
+                                  ),
+                                  border: Border.all(color: Colors.grey)
+                                ),
+                              ),
+                              SizedBox(width: 20,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  SizedBox(height: 10,),
+                                  Text(shop.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[700]
+                                      )
+                                  ),
+                                  SizedBox(height: 4,),
+                                  SmoothStarRating(
+                                    starCount: 5,
+                                    allowHalfRating: false,
+                                    isReadOnly: true,
+                                    rating: double.parse(shop.averageRate),
+                                  ),
+                                  SizedBox(height: 4,),
+                                  Row(
+                                    children: <Widget>[
+                                      Text('Avis: ', style: TextStyle(color: Colors.grey),),
+                                      Text(shop.voteCount, style: TextStyle(color: Colors.grey),),
+                                    ],
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 4,)
+                  ],
+                );
+              }
+            )
+          )
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed:() => Navigator.push(context, MaterialPageRoute(builder: (context)=>new StepperApp())),
+      ),
     );
   }
 
