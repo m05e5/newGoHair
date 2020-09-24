@@ -12,6 +12,7 @@ import 'package:go_hair/models/shop.dart';
 import 'package:go_hair/pages/auth/isAuthenticated.dart';
 import 'package:go_hair/pages/auth/settings.dart';
 import 'package:go_hair/pages/front/cardAdv.dart';
+import 'package:go_hair/pages/shop_detail.dart';
 import 'package:go_hair/pages/users/clients.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:object_mapper/object_mapper.dart';
@@ -19,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import 'horizontalList.dart';
+import 'package:floating_search_bar/floating_search_bar.dart';
 
 
 class FrontHomePage extends StatefulWidget {
@@ -265,6 +267,31 @@ class _FrontHomePageState extends State<FrontHomePage> {
               ),
             ),
           ),
+          
+      //     SafeArea(
+      //   child: Padding(
+      //     padding: const EdgeInsets.symmetric(horizontal: 20),
+      //     child:FloatingSearchBar.builder(
+      //   itemCount: 100,
+      //   itemBuilder: (BuildContext context, int index) {
+      //     return ListTile(
+      //       leading: Text(index.toString()),
+      //     );
+      //   },
+      //   trailing: CircleAvatar(
+      //     child: Text("RD"),
+      //   ),
+      //   drawer: Drawer(
+      //     child: Container(),
+      //   ),
+      //   onChanged: (String value) {},
+      //   onTap: () {},
+      //   decoration: InputDecoration.collapsed(
+      //     hintText: "Search...",
+      //   ),
+      // ),
+      //   ),
+      // ),
           Expanded(
             child: ListView.builder(
               itemCount: shops.length,
@@ -276,7 +303,15 @@ class _FrontHomePageState extends State<FrontHomePage> {
                       elevation: 4,
                       child: FlatButton(
                         padding: EdgeInsets.all(0),
-                        onPressed: (){},
+                        onPressed: ()=> Navigator.of(context).push(new MaterialPageRoute(
+               // here we are passing the value of the product detail page
+                builder: (context) => new Shop_Detail( 
+                  shop_detail_name: Shop.label_name,
+                  shop_detail_id:Shop.label_id,
+                  shop_detail_image:shop.imageUrl ,
+                  shop_detail_rating:shop.averageRate,
+                  shop_detail_VoteCount:shop.voteCount,
+                ))),
                         child: Container(
                           padding: EdgeInsets.all(8),
                           width: double.infinity,

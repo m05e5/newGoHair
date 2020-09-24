@@ -65,14 +65,14 @@ class _StepperPageState extends State<StepperPage> {
         title: Text('Reservation'),
       ),
       body: SafeArea(
-        child: _buildStepper(StepperType.vertical)
+        child: _buildStepper(StepperType.horizontal)
       ),
     );
   }
 
   _buildStepper(StepperType type) {
     final canCancel = currentStep > 0;
-    final canContinue = currentStep < 3;
+    final canContinue = currentStep < 4;
     var i = 0;
         return Stepper(
           type: type,
@@ -91,6 +91,10 @@ class _StepperPageState extends State<StepperPage> {
             title: Text('Date'),
             content:  dateDuRDV()
           ),
+            _buildStep(
+            title: Text('Heur'),
+            content:  heurDuRDV()
+          ),
           _buildStep(
             title: Text('Disabled'),
             content:  Text('hello')
@@ -104,6 +108,7 @@ class _StepperPageState extends State<StepperPage> {
     @required Widget content,
     StepState state = StepState.indexed,
     bool isActive = false,
+     labelPadding: Checkbox.width,
   }) {
     return Step(
       title: title,
@@ -176,6 +181,19 @@ SizedBox(height: 15.0),
       return SimpleDialog(children: <Widget>[Text('BOOM')],);
     });
   }
+  Widget heurDuRDV(){
+    return Column(children: <Widget>[
+       Wrap(children: <Widget>[
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+    timeItem(),
+  ],)
+    ],);
+  }
 
   Widget dateDuRDV() {
  
@@ -215,15 +233,7 @@ SizedBox(height: 15.0),
       daysHaveCircularBorder: true,
     ),
   ),
-  Wrap(children: <Widget>[
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-  ],)
+ 
       ],
     );
 }
