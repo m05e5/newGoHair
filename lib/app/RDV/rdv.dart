@@ -46,6 +46,7 @@ class _StepperPageState extends State<StepperPage> {
   DateTime _currentDate;
   DateTime today;
   var _markedDateMap;
+  
 
   
   @override
@@ -72,7 +73,7 @@ class _StepperPageState extends State<StepperPage> {
 
   _buildStepper(StepperType type) {
     final canCancel = currentStep > 0;
-    final canContinue = currentStep < 4;
+    final canContinue = currentStep < 3;
     var i = 0;
         return Stepper(
           type: type,
@@ -83,10 +84,7 @@ class _StepperPageState extends State<StepperPage> {
               setState(() => ++currentStep);
           }  : null,
           steps: [
-            _buildStep(
-              title: Text('Step ${i + 1}'),
-              content: step1()
-            ),
+
           _buildStep(
             title: Text('Date'),
             content:  dateDuRDV()
@@ -98,7 +96,11 @@ class _StepperPageState extends State<StepperPage> {
           _buildStep(
             title: Text('Disabled'),
             content:  Text('hello')
-          )
+          ),
+          _buildStep(
+              title: Text('Step ${i + 1}'),
+              content: step1()
+            ),
       ],
     );
   }
@@ -184,13 +186,13 @@ SizedBox(height: 15.0),
   Widget heurDuRDV(){
     return Column(children: <Widget>[
        Wrap(children: <Widget>[
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
-    timeItem(),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
+    RDVTime('12:00'),
   ],)
     ],);
   }
@@ -238,8 +240,19 @@ SizedBox(height: 15.0),
     );
 }
 
-timeItem(){
-  return Container(
+
+}
+class RDVTime extends StatelessWidget {
+ final String lheur;
+ const RDVTime(this.lheur);
+  final bool isSelected = false;
+
+
+
+
+ @override
+ Widget build(BuildContext context) {
+   return Container(
     margin: EdgeInsets.symmetric(horizontal: 4, vertical:2),
     height: 40,
     width: 100,
@@ -249,10 +262,11 @@ timeItem(){
         borderRadius: BorderRadius.circular(5)
       ),
       onPressed: (){
-
+        
       },
-      child: Text('10:00')
+      child: Text(lheur)
     ),
-  );
-}
+  
+   );
+ }
 }

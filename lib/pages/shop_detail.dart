@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:go_hair/models/category.dart';
+import 'package:go_hair/models/hair_style.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class Shop_Detail extends StatefulWidget {
@@ -24,6 +26,8 @@ class Shop_Detail extends StatefulWidget {
 class _Shop_DetailState extends State<Shop_Detail>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
+   List<Category> categories = [];
+  List<HairStyle> hairStyles = [];
 
   @override
   void initState() {
@@ -69,7 +73,7 @@ class _Shop_DetailState extends State<Shop_Detail>
             labelColor: Colors.orange,
             isScrollable: true,
             labelPadding: EdgeInsets.only(right: 35.0),
-            unselectedLabelColor: Color(0xFFCDCDCD),
+            unselectedLabelColor: Color(0xFFCDCDCF),
             tabs: <Widget>[
               Tab(
                 child: Text(
@@ -79,7 +83,7 @@ class _Shop_DetailState extends State<Shop_Detail>
               ),
               Tab(
                 child: Text(
-                  "Coiffure homme",
+                  "Coiffure femme",
                   style: TextStyle(fontSize: 15.0, fontFamily: 'Varela'),
                 ),
               ),
@@ -97,10 +101,16 @@ class _Shop_DetailState extends State<Shop_Detail>
               ),
             ],
           ),
+          Divider(
+             color: Colors.orange,
+            height: 5,
+            thickness: 2,
+            indent: 5,
+            endIndent: 5,),
           Expanded(
             child: TabBarView(
               children: [
-                Text("hello"),
+                  coiffureFemme(),
                 Icon(Icons.directions_transit),
                 Icon(Icons.directions_transit),
                 Icon(Icons.directions_bike),
@@ -110,6 +120,59 @@ class _Shop_DetailState extends State<Shop_Detail>
           ),
         ],
       ),
+    );
+  }
+
+  Widget coiffureFemme(){
+    return ListView.builder(
+      itemCount: hairStyles.length,
+       itemBuilder: (context, i){
+         print( hairStyles.length);
+         print( "--------------------------------------------------");
+          HairStyle hairStyle = hairStyles[i];
+
+           return Column(children: <Widget>[
+          Card(
+            elevation: 4,
+            child: FlatButton(
+              onPressed: (){}, 
+              child: Container(
+                padding: EdgeInsets.all(8),
+                width: double.infinity,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10)
+                ),
+                child: Row(children: <Widget>[
+                   Container(
+                                height: double.infinity,
+                                width: 120,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                    image: NetworkImage(hairStyle.photoUrl)
+                                  ),
+                                  border: Border.all(color: Colors.grey)
+                                ),
+                    ),
+                   SizedBox(width: 20,),
+                   Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                     children: <Widget>[
+                        SizedBox(height: 10,),
+                                  Text(hairStyle.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.grey[700]
+                                      )
+                                  ),
+
+                   ],)
+                ],),
+                )),
+          )
+      ],);
+      }
     );
   }
 }
