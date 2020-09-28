@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_hair/models/category.dart';
 import 'package:go_hair/models/hair_style.dart';
+import 'package:object_mapper/object_mapper.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 class Shop_Detail extends StatefulWidget {
@@ -26,13 +28,24 @@ class Shop_Detail extends StatefulWidget {
 class _Shop_DetailState extends State<Shop_Detail>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-   List<Category> categories = [];
+  List<Category> categories = [];
   List<HairStyle> hairStyles = [];
 
   @override
   void initState() {
     _tabController = TabController(length: 4, vsync: this);
+    getHairStyles();
     super.initState();
+  }
+
+  getHairStyles() async{
+    CollectionReference ref = Firestore.instance.collection(HairStyle.tableName);
+    QuerySnapshot snapshot = await ref.getDocuments();
+    snapshot.documents.forEach((element) {
+      setState(() {
+        hairStyles.add(Mapper.fromJson(element.data).toObject<HairStyle>());
+      });
+    });
   }
 
   @override
@@ -102,15 +115,16 @@ class _Shop_DetailState extends State<Shop_Detail>
             ],
           ),
           Divider(
-             color: Colors.orange,
+            color: Colors.orange,
             height: 5,
             thickness: 2,
             indent: 5,
-            endIndent: 5,),
+            endIndent: 5,
+          ),
           Expanded(
             child: TabBarView(
               children: [
-                  coiffureFemme(),
+                coiffureFemme(),
                 Icon(Icons.directions_transit),
                 Icon(Icons.directions_transit),
                 Icon(Icons.directions_bike),
@@ -123,57 +137,59 @@ class _Shop_DetailState extends State<Shop_Detail>
     );
   }
 
-  Widget coiffureFemme(){
+  Widget coiffureFemme() {
+    print(hairStyles.length);
     return ListView.builder(
-      itemCount: hairStyles.length,
-       itemBuilder: (context, i){
-         print( hairStyles.length);
-         print( "--------------------------------------------------");
+        itemCount: hairStyles.length,
+        itemBuilder: (context, i) {
+          print(hairStyles.length);
+          print("--------------------------------------------------");
           HairStyle hairStyle = hairStyles[i];
 
-           return Column(children: <Widget>[
-          Card(
-            elevation: 4,
-            child: FlatButton(
-              onPressed: (){}, 
-              child: Container(
-                padding: EdgeInsets.all(8),
-                width: double.infinity,
-                height: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Row(children: <Widget>[
-                   Container(
-                                height: double.infinity,
-                                width: 120,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  image: DecorationImage(
-                                    image: NetworkImage(hairStyle.photoUrl)
-                                  ),
-                                  border: Border.all(color: Colors.grey)
-                                ),
-                    ),
-                   SizedBox(width: 20,),
-                   Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                     children: <Widget>[
-                        SizedBox(height: 10,),
-                                  Text(hairStyle.name,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.grey[700]
-                                      )
-                                  ),
-
-                   ],)
-                ],),
-                )),
-          )
-      ],);
-      }
-    );
+          return Column(
+            children: <Widget>[
+              Card(
+                elevation: 4,
+                child: FlatButton(
+                    onPressed: () {},
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      width: double.infinity,
+                      height: 100,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            height: double.infinity,
+                            width: 120,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: DecorationImage(
+                                    image: NetworkImage(hairStyle.photoUrl)),
+                                border: Border.all(color: Colors.grey)),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Text(hairStyle.name,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey[700])),
+                            ],
+                          )
+                        ],
+                      ),
+                    )),
+              )
+            ],
+          );
+        });
   }
 }
-

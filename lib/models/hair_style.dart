@@ -1,6 +1,7 @@
 import 'package:object_mapper/object_mapper.dart';
 
 class HairStyle with Mappable{
+  static String tableName = "haire_style";
   String id;
   String name;
   String price;
